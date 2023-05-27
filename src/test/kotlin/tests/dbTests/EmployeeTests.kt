@@ -1,3 +1,5 @@
+package tests.dbTests
+
 import data.Employee
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
@@ -11,7 +13,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class EmployeeTest {
+class EmployeeTests {
 
     private lateinit var employeeUtils: EmployeeDBUtils
 

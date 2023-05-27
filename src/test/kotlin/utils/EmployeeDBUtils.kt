@@ -5,6 +5,8 @@ import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 import java.io.File
 import java.io.IOException
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -128,6 +130,6 @@ class EmployeeDBUtils {
 
     @Throws(IOException::class)
     fun readFile(filename: String): String {
-        return File("${System.getProperty("user.dir")}/src/main/resources/$filename").readText().trimIndent()
+        return File("${System.getProperty("user.dir")}/src/test/resources/$filename").readText().trimIndent()
     }
 }
