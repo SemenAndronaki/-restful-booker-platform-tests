@@ -5,8 +5,6 @@ import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 import java.io.File
 import java.io.IOException
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -15,8 +13,6 @@ import java.sql.SQLException
 class EmployeeDBUtils {
 
     private var connection: Connection
-
-    private var lastId = 0
 
     private val ADD_RECORD =
         "INSERT INTO employees (id, first_name, last_name, job_title, vacation_start, vacation_end) VALUES (?, ?, ?, ?, ?, ?);"
@@ -51,8 +47,7 @@ class EmployeeDBUtils {
     @Throws(SQLException::class)
     fun createEmployee(employee: Employee): EmployeeDBUtils {
         val preparedStatement: PreparedStatement = connection.prepareStatement(ADD_RECORD)
-        lastId++
-        preparedStatement.setInt(1, lastId)
+        preparedStatement.setInt(1, getLastEmployeeId() + 1)
         preparedStatement.setString(2, employee.firstName)
         preparedStatement.setString(3, employee.lastName)
         preparedStatement.setString(4, employee.jobTitle)
@@ -117,14 +112,15 @@ class EmployeeDBUtils {
 
     @Throws(SQLException::class)
     fun getLastEmployeeId(): Int {
-        return connection.prepareStatement("SELECT MAX(id) FROM employees;").executeQuery().getInt("MAX(id)")
+        val result: ResultSet = connection.prepareStatement("SELECT MAX(id) FROM employees;").executeQuery()
+        result.next()
+        return result.getInt(1)
     }
 
     @Throws(SQLException::class)
     fun resetDB(): EmployeeDBUtils {
         val ps = connection.prepareStatement(DELETE_ALL_EMPLOYEES)
         ps.executeUpdate()
-        lastId = 0
         return this
     }
 

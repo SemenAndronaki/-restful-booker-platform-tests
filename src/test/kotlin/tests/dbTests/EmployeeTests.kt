@@ -47,6 +47,7 @@ class EmployeeTests {
             vacationEnd = Date.valueOf("2023-04-05")
         )
         employeeUtils.createEmployee(employee1)
+        employeeUtils.getLastEmployeeId()
 
         val conflict = employeeUtils.checkVacationDateConflict(employee2)
         assertFalse(conflict, "No conflict because of different dates")
