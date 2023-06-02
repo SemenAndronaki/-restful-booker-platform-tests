@@ -1,6 +1,7 @@
 package tests.dbTests
 
 import data.Employee
+import data.JobTitle
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,12 +38,12 @@ class EmployeeTests {
     @Test
     fun checkNoVacationDateConflictSameJodDifferentVacationDate() {
         val employee1 = Employee(
-            firstName = "Ivan", lastName = "Ivanov", jobTitle = "Qa",
+            firstName = "Ivan", lastName = "Ivanov", jobTitle = JobTitle.QA,
             vacationStart = Date.valueOf("2023-05-01"),
             vacationEnd = Date.valueOf("2023-05-05")
         )
         val employee2 = Employee(
-            firstName = "Petr", lastName = "Petrov", jobTitle = "Qa",
+            firstName = "Petr", lastName = "Petrov", jobTitle = JobTitle.QA,
             vacationStart = Date.valueOf("2023-04-01"),
             vacationEnd = Date.valueOf("2023-04-05")
         )
@@ -56,12 +57,12 @@ class EmployeeTests {
     @Test
     fun checkVacationDateConflict() {
         val employee1 = Employee(
-            firstName = "Ivan", lastName = "Ivanov", jobTitle = "Qa",
+            firstName = "Ivan", lastName = "Ivanov", jobTitle = JobTitle.QA,
             vacationStart = Date.valueOf("2023-05-01"),
             vacationEnd = Date.valueOf("2023-05-05")
         )
         val employee2 = Employee(
-            firstName = "Petr", lastName = "Petrov", jobTitle = "Qa",
+            firstName = "Petr", lastName = "Petrov", jobTitle = JobTitle.QA,
             vacationStart = Date.valueOf("2023-05-01"),
             vacationEnd = Date.valueOf("2023-05-05")
         )
@@ -74,12 +75,12 @@ class EmployeeTests {
     @Test
     fun checkNoVacationDateConflictDifferentJobTitle() {
         val employee1 = Employee(
-            firstName = "Ivan", lastName = "Ivanov", jobTitle = "Qa",
+            firstName = "Ivan", lastName = "Ivanov", jobTitle = JobTitle.QA,
             vacationStart = Date.valueOf("2023-05-01"),
             vacationEnd = Date.valueOf("2023-05-05")
         )
         val employee2 = Employee(
-            firstName = "Petr", lastName = "Petrov", jobTitle = "java developer",
+            firstName = "Petr", lastName = "Petrov", jobTitle = JobTitle.JAVA_DEVELOPER,
             vacationStart = Date.valueOf("2023-05-01"),
             vacationEnd = Date.valueOf("2023-05-05")
         )

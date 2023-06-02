@@ -1,6 +1,7 @@
 package utils
 
 import data.Employee
+import data.JobTitle
 import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 import java.io.File
@@ -50,7 +51,7 @@ class EmployeeDBUtils {
         preparedStatement.setInt(1, getLastEmployeeId() + 1)
         preparedStatement.setString(2, employee.firstName)
         preparedStatement.setString(3, employee.lastName)
-        preparedStatement.setString(4, employee.jobTitle)
+        preparedStatement.setString(4, employee.jobTitle.toString())
         preparedStatement.setDate(5, employee.vacationStart)
         preparedStatement.setDate(6, employee.vacationEnd)
         preparedStatement.executeUpdate()
@@ -67,7 +68,7 @@ class EmployeeDBUtils {
                     id = results.getInt("id"),
                     firstName = results.getString("first_name"),
                     lastName = results.getString("last_name"),
-                    jobTitle = results.getString("job_title"),
+                    jobTitle = JobTitle.valueOf(results.getString("job_title")),
                     vacationStart = results.getDate("vacation_start"),
                     vacationEnd = results.getDate("vacation_end")
                 )
@@ -87,7 +88,7 @@ class EmployeeDBUtils {
                     id = results.getInt("id"),
                     firstName = results.getString("first_name"),
                     lastName = results.getString("last_name"),
-                    jobTitle = results.getString("job_title"),
+                    jobTitle = JobTitle.valueOf(results.getString("job_title")),
                     vacationStart = results.getDate("vacation_start"),
                     vacationEnd = results.getDate("vacation_end")
                 )
@@ -98,7 +99,7 @@ class EmployeeDBUtils {
 
     @Throws(SQLException::class)
     fun checkVacationDateConflict(employee: Employee): Boolean {
-        val employees = getAllEmployeesByJobTitle(employee.jobTitle)
+        val employees = getAllEmployeesByJobTitle(employee.jobTitle.toString())
         if (employees.isEmpty()) return false
         for (e in employees) {
             when {
