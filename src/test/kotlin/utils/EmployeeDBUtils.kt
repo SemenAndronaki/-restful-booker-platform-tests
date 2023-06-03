@@ -26,6 +26,8 @@ class EmployeeDBUtils {
 
     private val DELETE_ALL_EMPLOYEES = "DELETE FROM employees;"
 
+    private val DELETE_EMPLOYEE = "DELETE FROM employees WHERE id=%s;"
+
     @Throws(SQLException::class)
     constructor() {
         val dataSource = JdbcDataSource()
@@ -126,9 +128,12 @@ class EmployeeDBUtils {
     }
 
     @Throws(SQLException::class)
-    fun resetDB(): EmployeeDBUtils {
-        val ps = connection.prepareStatement(DELETE_ALL_EMPLOYEES)
-        ps.executeUpdate()
+    fun cleanEmployess(employeesToDelete: List<Employee>): EmployeeDBUtils {
+        for (employee in employeesToDelete) {
+            val query = DELETE_EMPLOYEE.replace("%s", employee.id.toString())
+            val ps = connection.prepareStatement(query)
+            ps.executeUpdate()
+        }
         return this
     }
 

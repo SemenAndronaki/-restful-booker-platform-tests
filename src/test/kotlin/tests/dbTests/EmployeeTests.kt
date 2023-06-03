@@ -3,8 +3,8 @@ package tests.dbTests
 import data.Employee
 import data.JobTitle
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -20,16 +20,18 @@ class EmployeeTests {
 
     private lateinit var employeeUtils: EmployeeDBUtils
 
+    private lateinit var employeesToDelete: List<Employee>
+
     @BeforeAll
     @Throws(SQLException::class, IOException::class)
     fun createEmployeeDb() {
         employeeUtils = EmployeeDBUtils()
     }
 
-    @BeforeEach
-    fun before() {
+    @AfterEach
+    fun after() {
         employeeUtils
-            .resetDB()
+            .cleanEmployess(employeesToDelete)
     }
 
     companion object {
@@ -67,5 +69,6 @@ class EmployeeTests {
 
         val actualConflict = employeeUtils.getVacationDateConflict(employee2)
         assertThat(expectedConflict).isEqualTo(actualConflict)
+        employeesToDelete = listOf(employee1, employee2)
     }
 }
