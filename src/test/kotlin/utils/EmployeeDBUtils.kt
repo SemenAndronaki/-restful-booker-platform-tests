@@ -5,11 +5,13 @@ import data.JobTitle
 import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.util.*
 
 class EmployeeDBUtils {
 
@@ -27,10 +29,15 @@ class EmployeeDBUtils {
     @Throws(SQLException::class)
     constructor() {
         val dataSource = JdbcDataSource()
-        dataSource.url = "jdbc:h2:mem:test;MODE=MySQL"
-        dataSource.user = "user"
-        dataSource.password = "password"
+        val dbProperties = File("${System.getProperty("user.dir")}/src/test/resources/db.properties")
+        val fis = FileInputStream(dbProperties)
+        val prop = Properties()
+        prop.load(fis)
+        dataSource.url = prop.getProperty("dbUrl")
+        dataSource.user = prop.getProperty("dbUser")
+        dataSource.password = prop.getProperty("dbPassword")
         connection = dataSource.connection
+//        connection.schema = prop.getProperty("schema")
         initDB()
         try {
             Server.createTcpServer("-tcpPort", "9090", "-tcpAllowOthers").start()

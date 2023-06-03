@@ -18,15 +18,10 @@ class EmployeeTests {
 
     private lateinit var employeeUtils: EmployeeDBUtils
 
-    private var dbOpen = false
-
     @BeforeAll
     @Throws(SQLException::class, IOException::class)
     fun createEmployeeDb() {
-        if (!dbOpen) {
-            employeeUtils = EmployeeDBUtils()
-            dbOpen = true
-        }
+        employeeUtils = EmployeeDBUtils()
     }
 
     @BeforeEach
