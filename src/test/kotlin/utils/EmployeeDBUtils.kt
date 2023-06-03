@@ -105,7 +105,7 @@ class EmployeeDBUtils {
     }
 
     @Throws(SQLException::class)
-    fun checkVacationDateConflict(employee: Employee): Boolean {
+    fun getVacationDateConflict(employee: Employee): Boolean {
         val employees = getAllEmployeesByJobTitle(employee.jobTitle.toString())
         if (employees.isEmpty()) return false
         for (e in employees) {

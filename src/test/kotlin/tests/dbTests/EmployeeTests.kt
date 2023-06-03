@@ -2,16 +2,18 @@ package tests.dbTests
 
 import data.Employee
 import data.JobTitle
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import utils.EmployeeDBUtils
 import java.io.IOException
 import java.sql.Date
 import java.sql.SQLException
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EmployeeTests {
@@ -30,58 +32,40 @@ class EmployeeTests {
             .resetDB()
     }
 
-    @Test
-    fun checkNoVacationDateConflictSameJodDifferentVacationDate() {
-        val employee1 = Employee(
-            firstName = "Ivan", lastName = "Ivanov", jobTitle = JobTitle.QA,
-            vacationStart = Date.valueOf("2023-05-01"),
-            vacationEnd = Date.valueOf("2023-05-05")
-        )
-        val employee2 = Employee(
-            firstName = "Petr", lastName = "Petrov", jobTitle = JobTitle.QA,
-            vacationStart = Date.valueOf("2023-04-01"),
-            vacationEnd = Date.valueOf("2023-04-05")
-        )
-        employeeUtils.createEmployee(employee1)
-        employeeUtils.getLastEmployeeId()
-
-        val conflict = employeeUtils.checkVacationDateConflict(employee2)
-        assertFalse(conflict, "No conflict because of different dates")
+    companion object {
+        @JvmStatic
+        fun arguments(): List<Arguments> {
+            val employee1 = Employee(
+                jobTitle = JobTitle.QA,
+                vacationStart = Date.valueOf("2023-05-01"),
+                vacationEnd = Date.valueOf("2023-05-05")
+            )
+            return listOf(
+                Arguments.of(
+                    employee1, employee1.copy(
+                        vacationStart = Date.valueOf("2023-04-01"),
+                        vacationEnd = Date.valueOf("2023-04-05")
+                    ), false
+                ),
+                Arguments.of(
+                    employee1, employee1.copy(
+                        vacationStart = Date.valueOf("2023-05-01"),
+                        vacationEnd = Date.valueOf("2023-05-05")
+                    ), true
+                ),
+                Arguments.of(
+                    employee1, employee1.copy(jobTitle = JobTitle.JAVA_DEVELOPER), false
+                )
+            )
+        }
     }
 
-    @Test
-    fun checkVacationDateConflict() {
-        val employee1 = Employee(
-            firstName = "Ivan", lastName = "Ivanov", jobTitle = JobTitle.QA,
-            vacationStart = Date.valueOf("2023-05-01"),
-            vacationEnd = Date.valueOf("2023-05-05")
-        )
-        val employee2 = Employee(
-            firstName = "Petr", lastName = "Petrov", jobTitle = JobTitle.QA,
-            vacationStart = Date.valueOf("2023-05-01"),
-            vacationEnd = Date.valueOf("2023-05-05")
-        )
+    @ParameterizedTest
+    @MethodSource("arguments")
+    fun checkVacationDataConflicts(employee1: Employee, employee2: Employee, expectedConflict: Boolean) {
         employeeUtils.createEmployee(employee1)
 
-        val conflict = employeeUtils.checkVacationDateConflict(employee2)
-        assertTrue(conflict, "No conflict because of different dates")
-    }
-
-    @Test
-    fun checkNoVacationDateConflictDifferentJobTitle() {
-        val employee1 = Employee(
-            firstName = "Ivan", lastName = "Ivanov", jobTitle = JobTitle.QA,
-            vacationStart = Date.valueOf("2023-05-01"),
-            vacationEnd = Date.valueOf("2023-05-05")
-        )
-        val employee2 = Employee(
-            firstName = "Petr", lastName = "Petrov", jobTitle = JobTitle.JAVA_DEVELOPER,
-            vacationStart = Date.valueOf("2023-05-01"),
-            vacationEnd = Date.valueOf("2023-05-05")
-        )
-        employeeUtils.createEmployee(employee1)
-
-        val conflict = employeeUtils.checkVacationDateConflict(employee2)
-        assertFalse(conflict, "No conflict because of different dates")
+        val actualConflict = employeeUtils.getVacationDateConflict(employee2)
+        assertThat(expectedConflict).isEqualTo(actualConflict)
     }
 }
