@@ -5,6 +5,7 @@ import data.JobTitle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -60,6 +61,17 @@ class EmployeeTests {
                 )
             )
         }
+    }
+
+    @Test
+    fun checkCantCreateEmployeesWithSameId() {
+        val employee1 = Employee(id = 1)
+        val employee2 = Employee(id = 1)
+        employeeUtils.createEmployee(employee1)
+        employeeUtils.createEmployee(employee2)
+        val employees = employeeUtils.getAllEmployees()
+        assertThat(employees[0].id).isNotEqualTo(employees[1].id)
+        employeesToDelete = employees
     }
 
     @ParameterizedTest

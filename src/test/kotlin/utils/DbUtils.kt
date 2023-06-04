@@ -1,6 +1,7 @@
 package utils
 
 import org.h2.jdbcx.JdbcDataSource
+import org.h2.tools.Server
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -28,7 +29,7 @@ abstract class DbUtils {
     }
 
     fun getAllRecords(table: String): ResultSet {
-        val getAllRecordsByParameterQuery = "SELECT * FROM $table';"
+        val getAllRecordsByParameterQuery = "SELECT * FROM $table;"
         return connection.prepareStatement(getAllRecordsByParameterQuery).executeQuery()
     }
 
@@ -51,6 +52,11 @@ abstract class DbUtils {
         dataSource.password = prop.getProperty("dbPassword")
         connection = dataSource.connection
 //        connection.schema = prop.getProperty("schema")
+        try {
+            Server.createTcpServer("-tcpPort", "9090", "-tcpAllowOthers").start()
+        } catch (e: NullPointerException) {
+            println("DB server mode disabled")
+        }
         return connection
     }
 

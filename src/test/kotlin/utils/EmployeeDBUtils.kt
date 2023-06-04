@@ -20,11 +20,6 @@ class EmployeeDBUtils : DbUtils {
     constructor() {
         prepareConnection()
         initDB(initScript)
-        try {
-            Server.createTcpServer("-tcpPort", "9090", "-tcpAllowOthers").start()
-        } catch (e: NullPointerException) {
-            println("DB server mode disabled")
-        }
     }
 
     @Throws(SQLException::class)
