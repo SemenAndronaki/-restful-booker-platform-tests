@@ -2,7 +2,7 @@ package utils
 
 import data.Employee
 import data.JobTitle
-import org.h2.tools.Server
+import java.sql.DatabaseMetaData
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -14,24 +14,24 @@ class EmployeeDBUtils : DbUtils {
     private val tableName = "employees"
 
     private val ADD_RECORD =
-        "INSERT INTO employees (id, first_name, last_name, job_title, vacation_start, vacation_end) VALUES (?, ?, ?, ?, ?, ?);"
+        "INSERT INTO MySchema.employees (id, first_name, last_name, job_title, vacation_start, vacation_end) VALUES (?, ?, ?, ?, ?, ?);"
 
     @Throws(SQLException::class)
     constructor() {
         prepareConnection()
-        initDB(initScript)
+        initDB(initScript, tableName)
     }
 
     @Throws(SQLException::class)
     fun createEmployee(employee: Employee): EmployeeDBUtils {
         val connection = getConnection()
         val preparedStatement: PreparedStatement = connection.prepareStatement(ADD_RECORD)
-        preparedStatement.setInt(1, getLastEmployeeId() + 1)
-        preparedStatement.setString(2, employee.firstName)
-        preparedStatement.setString(3, employee.lastName)
-        preparedStatement.setString(4, employee.jobTitle.toString())
-        preparedStatement.setDate(5, employee.vacationStart)
-        preparedStatement.setDate(6, employee.vacationEnd)
+        preparedStatement.setObject(1, getLastEmployeeId() + 1)
+        preparedStatement.setObject(2, employee.firstName)
+        preparedStatement.setObject(3, employee.lastName)
+        preparedStatement.setObject(4, employee.jobTitle.toString())
+        preparedStatement.setObject(5, employee.vacationStart)
+        preparedStatement.setObject(6, employee.vacationEnd)
         preparedStatement.executeUpdate()
         return this
     }

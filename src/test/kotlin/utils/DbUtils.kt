@@ -5,36 +5,34 @@ import org.h2.tools.Server
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.sql.Connection
-import java.sql.ResultSet
-import java.sql.SQLException
+import java.sql.*
 import java.util.*
 
 abstract class DbUtils {
 
     private lateinit var connection: Connection
-
+    private lateinit var schema: String
     fun getConnection(): Connection {
         return connection
     }
 
     fun getAllRecordsByStringParameter(table: String, parameterName: String, parameterValue: String): ResultSet {
-        val getAllRecordsByParameterQuery = "SELECT * FROM $table WHERE $parameterName='$parameterValue';"
+        val getAllRecordsByParameterQuery = "SELECT * FROM $schema.$table WHERE $parameterName='$parameterValue';"
         return connection.prepareStatement(getAllRecordsByParameterQuery).executeQuery()
     }
 
     fun getSingleValueFromTable(table: String, value: String): ResultSet {
-        val getSingleRecordFromTable = "SELECT $value FROM $table;"
+        val getSingleRecordFromTable = "SELECT $value FROM $schema.$table;"
         return connection.prepareStatement(getSingleRecordFromTable).executeQuery()
     }
 
     fun getAllRecords(table: String): ResultSet {
-        val getAllRecordsByParameterQuery = "SELECT * FROM $table;"
+        val getAllRecordsByParameterQuery = "SELECT * FROM $schema.$table;"
         return connection.prepareStatement(getAllRecordsByParameterQuery).executeQuery()
     }
 
     fun deleteRecordById(table: String, id: Int) {
-        val deleteRecord = "DELETE FROM $table WHERE id=$id;"
+        val deleteRecord = "DELETE FROM $schema.$table WHERE id=$id;"
         connection.prepareStatement(deleteRecord).executeUpdate()
     }
 
@@ -50,8 +48,9 @@ abstract class DbUtils {
         dataSource.url = prop.getProperty("dbUrl")
         dataSource.user = prop.getProperty("dbUser")
         dataSource.password = prop.getProperty("dbPassword")
+        schema = prop.getProperty("schema")
         connection = dataSource.connection
-//        connection.schema = prop.getProperty("schema")
+        connection.prepareStatement("CREATE SCHEMA $schema").execute()
         try {
             Server.createTcpServer("-tcpPort", "9090", "-tcpAllowOthers").start()
         } catch (e: NullPointerException) {
@@ -61,12 +60,50 @@ abstract class DbUtils {
     }
 
     @Throws(SQLException::class, IOException::class)
-    fun initDB(initScript: String) {
-        connection.prepareStatement(readFile(initScript)).execute()
+    fun initDB(initScript: String, table: String) {
+        connection.prepareStatement(readFile(initScript).replace("%s", "$schema.$table")).execute()
     }
 
     @Throws(IOException::class)
     fun readFile(filename: String): String {
         return File("${System.getProperty("user.dir")}/src/test/resources/dbScripts/$filename").readText().trimIndent()
     }
+//
+//    @Throws(SQLException::class)
+//    fun createEmployeeBaseClass(tableName: String, data: Any): EmployeeDBUtils {
+//        val query = formAddRecordQuery(tableName)
+//        val connection = getConnection()
+//        val preparedStatement: PreparedStatement = connection.prepareStatement(query)
+//        val props = data::class.java.declaredFields
+//        val size = props.size
+//        for (i in 1..size) {
+//            preparedStatement.setObject(i, props[i])
+//        }
+//
+//        return this
+//    }
+//
+//    fun getColumns(table: String): MutableList<String> {
+//        var namesList: MutableList<String> = mutableListOf()
+//        val metadata: ResultSetMetaData = connection
+//            .prepareStatement("SELECT * FROM $table;").executeQuery().metaData
+//        for (i in 1..metadata.columnCount) {
+//            namesList.add(metadata.getColumnName(i).toString())
+//        }
+//        return namesList
+//    }
+//
+//    fun formAddRecordQuery(table: String): String {
+//        val fields = getColumns(table)
+//        var fieldsToInsert = "("
+//        var values = "("
+//        fields.map { field ->
+//            fieldsToInsert = "$fieldsToInsert $field,"
+//            values = "$values ?,"
+//        }
+//        fieldsToInsert = fieldsToInsert.dropLast(1) + ")"
+//        values = values.dropLast(1) + ")"
+//
+//        return "INSERT INTO $table $fieldsToInsert VALUES $values;"
+//    }
 }
