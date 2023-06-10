@@ -21,7 +21,7 @@ class EmployeeTests {
 
     private lateinit var employeeUtils: EmployeeDBUtils
 
-    private lateinit var employeesToDelete: List<Employee>
+    private var employeesToDelete: MutableList<Employee> = mutableListOf()
 
     @BeforeAll
     @Throws(SQLException::class, IOException::class)
@@ -67,20 +67,21 @@ class EmployeeTests {
     fun checkCantCreateEmployeesWithSameId() {
         val employee1 = Employee(id = 1)
         val employee2 = Employee(id = 1)
-        employeeUtils.createEmployee(employee1)
-        employeeUtils.createEmployee(employee2)
+        createEmployee(employee1)
+        createEmployee(employee2)
         val employees = employeeUtils.getAllEmployees()
         assertThat(employees[0].id).isNotEqualTo(employees[1].id)
-        employeesToDelete = employees
     }
 
     @ParameterizedTest
     @MethodSource("arguments")
     fun checkVacationDataConflicts(employee1: Employee, employee2: Employee, expectedConflict: Boolean) {
-        employeeUtils.createEmployee(employee1)
-
+        createEmployee(employee1)
         val actualConflict = employeeUtils.getVacationDateConflict(employee2)
         assertThat(expectedConflict).isEqualTo(actualConflict)
-        employeesToDelete = listOf(employee1, employee2)
+    }
+
+    private fun createEmployee(employee: Employee) {
+        employeesToDelete.add(employeeUtils.createEmployee(employee))
     }
 }

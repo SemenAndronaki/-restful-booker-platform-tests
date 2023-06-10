@@ -22,6 +22,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("io.rest-assured:rest-assured:5.3.0")
     testImplementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.flywaydb:flyway-core:9.18.0")
 }
 
 tasks.test {
