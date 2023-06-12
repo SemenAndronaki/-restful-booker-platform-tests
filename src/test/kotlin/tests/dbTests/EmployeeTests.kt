@@ -8,8 +8,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.*
 import utils.EmployeeDBUtils
 import java.io.IOException
 import java.sql.Date
@@ -22,6 +21,12 @@ class EmployeeTests {
     private lateinit var employeeUtils: EmployeeDBUtils
 
     private var employeesToDelete: MutableList<Employee> = mutableListOf()
+
+    private val defaultEmployee = Employee(
+        jobTitle = JobTitle.QA,
+        vacationStart = Date.valueOf("2023-05-01"),
+        vacationEnd = Date.valueOf("2023-05-05")
+    )
 
     @BeforeAll
     @Throws(SQLException::class, IOException::class)
@@ -79,6 +84,24 @@ class EmployeeTests {
         createEmployee(employee1)
         val actualConflict = employeeUtils.getVacationDateConflict(employee2)
         assertThat(expectedConflict).isEqualTo(actualConflict)
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = ["/employeeTest.csv"], numLinesToSkip = 1)
+    fun checkVacationDataConflicts_CSVSource(
+        jobTitle: String,
+        vacationStart: String,
+        vacationEnd: String,
+        conflict: Boolean
+    ) {
+        createEmployee(defaultEmployee)
+        val employee2 = Employee(
+            jobTitle = JobTitle.valueOf(jobTitle),
+            vacationStart = Date.valueOf(vacationStart),
+            vacationEnd = Date.valueOf(vacationEnd)
+        )
+        val actualConflict = employeeUtils.getVacationDateConflict(employee2)
+        assertThat(conflict).isEqualTo(actualConflict)
     }
 
     private fun createEmployee(employee: Employee) {

@@ -1,0 +1,4 @@
+jobTitle, vacationStart,vacationEnd, conflict
+"QA", "2023-04-01", "2023-04-05", false
+"QA", "2023-05-01", "2023-05-05", true
+"JAVA_DEVELOPER", "2023-05-01", "2023-05-05",false
