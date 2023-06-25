@@ -16,13 +16,20 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
+
     implementation("mysql:mysql-connector-java:8.0.15")
     implementation("com.h2database:h2:1.3.148")
+
     implementation("org.apache.commons:commons-lang3:3.12.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("io.rest-assured:rest-assured:5.3.0")
     testImplementation("com.google.code.gson:gson:2.10.1")
+
     implementation("org.flywaydb:flyway-core:9.18.0")
+    implementation("org.slf4j:slf4j-api:2.0.7")
+
+    testImplementation("io.cucumber:cucumber-junit:7.12.1")
+    testImplementation("io.cucumber:cucumber-java:7.12.1")
 }
 
 tasks.test {

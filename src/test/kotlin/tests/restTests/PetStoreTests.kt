@@ -37,9 +37,8 @@ class PetStoreTests {
 
     @Test
     fun checkDeletePet() {
-        val expectedPet = pet.copy(category = Category(id = 2, name = "Dog"), name = "Good Boy")
         petUtils
-            .deletePet(expectedPet.id)
-            .checkPetIsDeleted(expectedPet.id)
+            .deletePet(pet.id)
+            .checkPetIsDeleted(pet.id)
     }
 }
